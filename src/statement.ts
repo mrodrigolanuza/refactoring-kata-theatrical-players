@@ -59,8 +59,10 @@ export function statement(summary: PerformanceSummary, plays: Record<string, Pla
     return totalAmount;
   }
 function calculateCreditsFor(perf: Performance, play: Play) {
-  let credits:number=0;
-  credits += Math.max(perf.audience - 30, 0);
-  if ("comedy" === play.type) credits += Math.floor(perf.audience / 5);
-  return credits;
+  let baseCredits:number=0;
+  baseCredits += Math.max(perf.audience - 30, 0);
+  let extraComedyCredits = Math.floor(perf.audience / 5);
+  if ("comedy" === play.type) 
+    baseCredits += extraComedyCredits;
+  return baseCredits;
 }
