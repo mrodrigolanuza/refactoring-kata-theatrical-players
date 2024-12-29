@@ -23,8 +23,7 @@ export function statement(summary: PerformanceSummary, plays: Record<string, Pla
     minimumFractionDigits: 2,
   }).format;
 
-  for (let perf of summary.performances) {
-    const play = plays[perf.playID];
+  function calculateAmount(play: Play, perf: Performance) {
     let thisAmount = 0;
     switch (play.type) {
       case "tragedy":
@@ -43,6 +42,12 @@ export function statement(summary: PerformanceSummary, plays: Record<string, Pla
       default:
         throw new Error(`unknown type: ${play.type}`);
     }
+    return thisAmount;
+  }
+
+  for (let perf of summary.performances) {
+    const play = plays[perf.playID];
+    let thisAmount = calculateAmount(play, perf);
     // add volume credits
     volumeCredits += Math.max(perf.audience - 30, 0);
     // add extra credit for every ten comedy attendees
