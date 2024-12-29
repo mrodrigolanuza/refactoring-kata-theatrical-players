@@ -26,7 +26,7 @@ export function statement(summary: PerformanceSummary, plays: Record<string, Pla
   for (let perf of summary.performances) {
     const play = plays[perf.playID];
     let thisAmount = calculateAmount(play, perf);
-    volumeCredits += calculateCreditsFor(perf, play);
+    volumeCredits += calculateCreditsFor(play, perf);
     // print line for this order
     result += ` ${play.name}: ${format(thisAmount / 100)} (${
       perf.audience
@@ -58,11 +58,10 @@ export function statement(summary: PerformanceSummary, plays: Record<string, Pla
     }
     return totalAmount;
   }
-function calculateCreditsFor(perf: Performance, play: Play) {
-  let baseCredits:number=0;
-  baseCredits += Math.max(perf.audience - 30, 0);
+function calculateCreditsFor(play: Play, perf: Performance) {
+  let baseCredits= Math.max(perf.audience - 30, 0);
   let extraComedyCredits = Math.floor(perf.audience / 5);
-  if ("comedy" === play.type) 
-    baseCredits += extraComedyCredits;
-  return baseCredits;
+  return ("comedy" === play.type) 
+         ? baseCredits + extraComedyCredits
+         : baseCredits;
 }
