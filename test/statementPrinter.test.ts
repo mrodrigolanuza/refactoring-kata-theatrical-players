@@ -30,12 +30,7 @@ test("print in HTML format", () =>{
   //act
   const plays = createAnExamplePlays();
   //assert
-  expect(statementWebPrinter(aSummary, plays)).toEqual(`<h1>Statement for BigCo</h1>
- <ul><li>Hamlet: $650.00 (55 seats)</li>
- <li>As You Like It: $580.00 (35 seats)</li>
- <li>Othello: $500.00 (40 seats)</li><ul>
-<p>Amount owed is $1,730.00</p>
-<p>You earned 47 credits</p>`);
+  expect(statementWebPrinter(aSummary, plays)).toEqual(`<h1>Statement for BigCo</h1><ul><li>Hamlet: $650.00 (55 seats)</li><li>As You Like It: $580.00 (35 seats)</li><li>Othello: $500.00 (40 seats)</li></ul><p>Amount owed is $1,730.00</p><p>You earned 47 credits</p>`);
 });
 
 function createAnPerformanceSummary() {
