@@ -5,10 +5,19 @@ export function statementPrinter(summary: PerformanceSummary, plays: Record<stri
   const calculationData = statementCalculation(summary, plays);
   return printStatementAsPlainText(calculationData);
 }
+
+
+export function statementWebPrinter(summary: PerformanceSummary, plays: Record<string, Play>) {
+  const calculationData = statementCalculation(summary, plays);
+  return printStatementAsHtml(calculationData);
+}
 function printStatementAsPlainText(statement: Statement) {
   let result = `Statement for ${statement.customer}\n`;
   statement.statementLines.forEach(line => {result += ` ${line.playName}: ${line.amountInUSD} (${line.audience} seats)\n`;})
   result += `Amount owed is ${statement.totalAmountInUSD}\n`;
   result += `You earned ${statement.totalCreditsEarned} credits\n`;
   return result;
+}
+function printStatementAsHtml(calculationData: Statement) {
+  return ``;  
 }
