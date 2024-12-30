@@ -12,15 +12,44 @@ type PerformanceSummary = {
   customer: string;
   performances: Performance[];
 };
+
+type Statement = {
+  customer: string;
+  totalAmountInUSD: string;
+  totalCreditsEarned: number;
+  statementLines: StatementLine[];
+};
+
+type StatementLine = {
+  playName: string;
+  audience: number;
+  amountInUSD: string;
+};
 export function statement(summary: PerformanceSummary, plays: Record<string, Play>) {
-  let result = `Statement for ${summary.customer}\n`;
-  for (let perf of summary.performances) {
-    const play = plays[perf.playID];
-    let thisAmount = calculateAmount(play, perf);
-    result += ` ${play.name}: ${(formatAsUSD(thisAmount))} (${perf.audience} seats)\n`;
-  }
-  result += `Amount owed is ${formatAsUSD(calculateTotalAmount(summary, plays))}\n`;
-  result += `You earned ${(calculateVolumeCredits(summary, plays))} credits\n`;
+  const calculationData = statementCalculation(summary, plays);
+  return renderStatementAsPlainText(calculationData);
+}
+function statementCalculation(summary: PerformanceSummary, plays: Record<string, Play>) : Statement {
+  return {
+    customer: summary.customer,
+    totalAmountInUSD: formatAsUSD(calculateTotalAmount(summary, plays)),
+    totalCreditsEarned: calculateVolumeCredits(summary, plays),
+    statementLines: summary.performances.map(perf => statementLineCalculation(perf, plays))
+  };
+}
+function statementLineCalculation(perf:Performance, plays: Record<string, Play>): StatementLine{
+  const play = plays[perf.playID];
+  return {
+      playName: play.name,
+      amountInUSD: formatAsUSD(calculateAmount(play, perf)),
+      audience: perf.audience
+    };
+}
+function renderStatementAsPlainText(statement: Statement) {
+  let result = `Statement for ${statement.customer}\n`;
+  statement.statementLines.forEach(line => {result += ` ${line.playName}: ${line.amountInUSD} (${line.audience} seats)\n`;})
+  result += `Amount owed is ${statement.totalAmountInUSD}\n`;
+  result += `You earned ${statement.totalCreditsEarned} credits\n`;
   return result;
 }
 function calculateTotalAmount(summary: PerformanceSummary, plays: Record<string, Play>) {
