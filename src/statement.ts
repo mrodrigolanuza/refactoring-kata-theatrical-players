@@ -13,27 +13,29 @@ type PerformanceSummary = {
   performances: Performance[];
 };
 
+function formatAsUSD(thisAmount: number) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+  }).format(thisAmount / 100);
+}
+
 export function statement(summary: PerformanceSummary, plays: Record<string, Play>) {
   let totalAmount = 0;
   let volumeCredits = 0;
   let result = `Statement for ${summary.customer}\n`;
-  const format = new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2,
-  }).format;
-
   for (let perf of summary.performances) {
     const play = plays[perf.playID];
     let thisAmount = calculateAmount(play, perf);
     volumeCredits += calculateCreditsFor(play, perf);
     // print line for this order
-    result += ` ${play.name}: ${format(thisAmount / 100)} (${
+    result += ` ${play.name}: ${(formatAsUSD(thisAmount))} (${
       perf.audience
     } seats)\n`;
     totalAmount += thisAmount;
   }
-  result += `Amount owed is ${format(totalAmount / 100)}\n`;
+  result += `Amount owed is ${formatAsUSD(totalAmount)}\n`;
   result += `You earned ${volumeCredits} credits\n`;
   return result;
 }
