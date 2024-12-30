@@ -12,27 +12,6 @@ type PerformanceSummary = {
   customer: string;
   performances: Performance[];
 };
-
-function formatAsUSD(thisAmount: number) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2,
-  }).format(thisAmount / 100);
-}
-
-function calculateVolumeCredits(summary: PerformanceSummary, plays: Record<string, Play>) {
-  return summary.performances
-      .map( perf =>  calculateCreditsFor(plays[perf.playID], perf))
-      .reduce( (acc, cur) => acc + cur, 0);
-}
-
-function calculateTotalAmount(summary: PerformanceSummary, plays: Record<string, Play>) {
-  return summary.performances
-      .map(perf => calculateAmount(plays[perf.playID], perf))
-      .reduce( (acc, cur) => acc + cur, 0);
-}
-
 export function statement(summary: PerformanceSummary, plays: Record<string, Play>) {
   let result = `Statement for ${summary.customer}\n`;
   for (let perf of summary.performances) {
@@ -44,7 +23,12 @@ export function statement(summary: PerformanceSummary, plays: Record<string, Pla
   result += `You earned ${(calculateVolumeCredits(summary, plays))} credits\n`;
   return result;
 }
-  function calculateAmount(play: Play, performance: Performance) {
+function calculateTotalAmount(summary: PerformanceSummary, plays: Record<string, Play>) {
+  return summary.performances
+      .map(perf => calculateAmount(plays[perf.playID], perf))
+      .reduce( (acc, cur) => acc + cur, 0);
+}
+function calculateAmount(play: Play, performance: Performance) {
     let totalAmount = 0;
     switch (play.type) { 
       case "tragedy":
@@ -71,4 +55,16 @@ function calculateCreditsFor(play: Play, perf: Performance) {
   return ("comedy" === play.type) 
          ? baseCredits + extraComedyCredits
          : baseCredits;
+}
+function calculateVolumeCredits(summary: PerformanceSummary, plays: Record<string, Play>) {
+  return summary.performances
+      .map( perf =>  calculateCreditsFor(plays[perf.playID], perf))
+      .reduce( (acc, cur) => acc + cur, 0);
+}
+function formatAsUSD(thisAmount: number) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+  }).format(thisAmount / 100);
 }
