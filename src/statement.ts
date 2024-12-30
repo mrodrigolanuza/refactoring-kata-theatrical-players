@@ -28,14 +28,22 @@ function calculateVolumeCredits(summary: PerformanceSummary, plays: Record<strin
 }
 
 export function statement(summary: PerformanceSummary, plays: Record<string, Play>) {
-  let totalAmount = 0;
   let result = `Statement for ${summary.customer}\n`;
+  
+  let totalAmount = 0;
+  for (let perf of summary.performances) {
+    const play = plays[perf.playID];
+    let thisAmount = calculateAmount(play, perf);
+    totalAmount += thisAmount;
+  }
+
   for (let perf of summary.performances) {
     const play = plays[perf.playID];
     let thisAmount = calculateAmount(play, perf);
     result += ` ${play.name}: ${(formatAsUSD(thisAmount))} (${perf.audience} seats)\n`;
-    totalAmount += thisAmount;
   }
+  
+  
   result += `Amount owed is ${formatAsUSD(totalAmount)}\n`;
   result += `You earned ${(calculateVolumeCredits(summary, plays))} credits\n`;
   return result;
