@@ -22,12 +22,9 @@ function formatAsUSD(thisAmount: number) {
 }
 
 function calculateVolumeCredits(summary: PerformanceSummary, plays: Record<string, Play>) {
-  let volumeCredits = 0;
-  for (let perf of summary.performances) {
-    const play = plays[perf.playID];
-    volumeCredits += calculateCreditsFor(play, perf);
-  }
-  return volumeCredits;
+  return summary.performances
+      .map( perf =>  calculateCreditsFor(plays[perf.playID], perf))
+      .reduce( (acc, cur) => acc + cur, 0);
 }
 
 export function statement(summary: PerformanceSummary, plays: Record<string, Play>) {
