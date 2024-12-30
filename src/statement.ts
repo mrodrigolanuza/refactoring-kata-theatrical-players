@@ -21,22 +21,26 @@ function formatAsUSD(thisAmount: number) {
   }).format(thisAmount / 100);
 }
 
+function calculateVolumeCredits(summary: PerformanceSummary, plays: Record<string, Play>) {
+  let volumeCredits = 0;
+  for (let perf of summary.performances) {
+    const play = plays[perf.playID];
+    volumeCredits += calculateCreditsFor(play, perf);
+  }
+  return volumeCredits;
+}
+
 export function statement(summary: PerformanceSummary, plays: Record<string, Play>) {
   let totalAmount = 0;
-  let volumeCredits = 0;
   let result = `Statement for ${summary.customer}\n`;
   for (let perf of summary.performances) {
     const play = plays[perf.playID];
     let thisAmount = calculateAmount(play, perf);
-    volumeCredits += calculateCreditsFor(play, perf);
-    // print line for this order
-    result += ` ${play.name}: ${(formatAsUSD(thisAmount))} (${
-      perf.audience
-    } seats)\n`;
+    result += ` ${play.name}: ${(formatAsUSD(thisAmount))} (${perf.audience} seats)\n`;
     totalAmount += thisAmount;
   }
   result += `Amount owed is ${formatAsUSD(totalAmount)}\n`;
-  result += `You earned ${volumeCredits} credits\n`;
+  result += `You earned ${(calculateVolumeCredits(summary, plays))} credits\n`;
   return result;
 }
   function calculateAmount(play: Play, performance: Performance) {
